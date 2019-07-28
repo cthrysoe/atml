@@ -1,0 +1,248 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{latexsym}
+\usepackage{subcaption}
+\usepackage{gensymb}
+\usepackage{caption}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum}
+\usepackage{tabularx}
+\usepackage{color}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{white},   % you must add \usepackage{color} or \usepackage{xcolor}
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  otherkeywords={*,...},           % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+\linespread{1.1} % Line spacing
+
+%\pagestyle{fancy}
+\lhead{Set Header} % Top left header
+\chead{}
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+\setlength\parindent{16pt} % Removes all indentation from paragraphs
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\title{
+\vspace{1in}
+\textmd{\textbf{Advanced Topics in Machine Learning - Assignment 4}} \\
+\author{Christoffer Thrysøe - dfv107}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+\pagenumbering{arabic}
+\section{1. SVM model selection}
+The RBF kernel is defined as:
+\begin{equation}
+K(x,x') = exp(-\gamma || x - x'||^2)
+\end{equation}
+To see the transformed feature space, we can pick $\gamma=1$ and write out the transformation:
+\begin{align}
+K(x,x') &= exp(|| x - x'||^2) \\
+&= exp(-(x)^2) \cdot exp(2xx') \cdot exp(-(x')^2) \\
+&= exp(-(x)^2) \cdot \sum\limits_{k=0}^\infty \dfrac{2^k(x)^k(x')^k}{k!} \cdot exp(-(x')^2)
+\end{align}
+Thus the non linear transform can be written as followed:
+\begin{equation}
+\Phi(x) = exp(-x^2) \cdot \left( 1, \sqrt{\dfrac{2^1}{1!}x}, \sqrt{\dfrac{2^2}{2!}x^2}, \dots \right)
+\end{equation}
+We have that the transformation $\Phi$ is an infinite dimensional transformation, therefore the data will most likely be separable in the transformed space. The parameter $\gamma$ controls the width of the kernel . A small value of $\gamma$ results in a wide kernel, while a large $\gamma$ results in a narrow kernel. A narrow kernel will more likely lead to over-fitting as the geometric surface of the $\Phi$-transformed feature space will be sharp, allowing the margin more freedom to separate the data, where a larger kernel will choose a larger margin, because the geometric surface is smooth.
+The parameter $C$ is the regularization parameter and controls the penalty we add to the slack variables. A small value of $C$ means that we allow more slack variables and thus can obtain a larger margin, whereas a large value for $C$ will penalize slack variables, which will cause the SVM
+to classify as many data points correctly as possible, often resulting in a smaller margin and thus a worse generalization. When we perform hyper parameter selection, we can for each $\gamma$, arrange the values of $C$ such that they are increasing. If the data, in the $\Phi$-transformed space, is separable then there must exists some $C'$ such that when we have $C>C'$, the SVM will be a hard margin SVM in the infinite dimensional feature space. In this case, any $C>C'$ will result in the same hyperplane, and therefore we can stop hyper parameter selection, because we will get the same hyperplane. It is clear to see from the SVM minimization problem shown in \eqref{eq:minthis}
+\begin{equation}
+\label{eq:minthis}
+\text{minimize}_{\xi,w,b} \hspace{0.2cm} \dfrac{1}{2} \langle w,w \rangle + C \sum\limits_{i=1}^l \xi_i \\
+\end{equation}
+If we are able to separate the data completely, we will get the following minimization problem:
+\begin{equation}
+\text{minimize}_{\xi,w,b} \hspace{0.2cm} \dfrac{1}{2} \langle w,w \rangle + C \sum\limits_{i=1}^l 0 \\
+\end{equation}
+the slack variable will be zero because all training examples are classified correctly and clearly increasing $C$ will not result in a different hyperplane. Thus we know that when the error on the training data is zero, increasing $C$ will not change the margin and we can therefore move on to the next value of $\gamma$. \\
+I believe that the above can also be used for inseparable data in the $\Phi$-transformed space. At some point the penalty term, $C$ will make the hyperplane separate as many data points as possible, but because the data is inseparable in the $\Phi$-transformed space, the hyperplane will be fixed when increasing $C$. If we have that the weights of the hyperplane don't change, when increasing $C$, we will know that we can stop, as we will get the same hyperplane regardless of the increase in $C$. This stopping criteria will also apply to when the data is separable.
+\section{2. Least Squares SVMs}
+For the regular $L_2$-norm, soft margin SVM we have the following minimization problem:
+\begin{align}
+\text{minimize}_{\xi,w,b} \hspace{0.5cm} &\dfrac{1}{2} \langle w,w\rangle + \dfrac{C}{2} \sum\limits_{i=1}^l \xi_i^2 \\
+\text{subject to } \hspace{0.5cm} &y_i(\langle w, \Phi(x_i) \rangle + b ) \geq 1 - \xi_i
+\end{align}
+Instead of the hinge loss, the least squares SVM uses the following error function:
+\begin{equation}
+L(y_i,f(x_i)) = (y_i - f(x_i))^2 = e_i^2
+\end{equation}
+The least squares SVM can then be formulated in the following way:
+\begin{equation}
+\label{eq:lsmin}
+\text{minimize}_{w,b,e} \hspace{0.5cm} \dfrac{1}{2} \langle w,w \rangle + \dfrac{\gamma}{2} \sum\limits_{i=1}^l e_i^2
+\end{equation}
+\subsection{1}
+As presented in the lecture notes, we can reformulate the problem as a regularized risk minimization:
+\begin{equation}
+\text{minimize}_{f\in H^b_k} \hspace{0.25cm} \dfrac{1}{l} \sum\limits_{i=1}^l L(y_i,f(x_i)) + \upsilon_l ||f||^2_k
+\end{equation}
+where $\upsilon_l = (l\gamma)^{-1}$. If we use the least squares error function, we get the following representation:
+\begin{equation}
+\text{minimize}_{f\in H^b_k} \hspace{0.25cm} \dfrac{1}{l} \sum\limits_{i=1}^l (y_i - f(x_i))^2 + \upsilon_l ||f||^2_k
+\end{equation}
+next we can use the Representer theorem to get a representation of $f(x)$ which has the form:
+\begin{equation}
+f(x) = \sum\limits_{i=1}^l \alpha_i k(x_i,x)
+\end{equation}
+which will give us the following:
+\begin{equation}
+\min_{\alpha} \hspace{0.25cm} \dfrac{1}{l} \sum\limits_{i=1}^l (y_i - \sum\limits_{j=1}^l \alpha_j k(x_i, x_j))^2 + \upsilon_l || \sum\limits_{j=1}^l \alpha_j k(x_j,\cdot)||^2_k
+\end{equation}
+which is a problem we can minimize, by taking the partial derivative with respect to $\alpha$, setting it to zero and finding the solution to $\alpha$.
+% Thus this problem does not necessary rely on using the lagrange, as it can be solved using regularized risk minimization.
+\subsection{2}
+The constraint on the least squares SVM minimization problem from \eqref{eq:lsmin} is the following equality constraint:
+\begin{equation}
+y_i [w^T \Phi(x_i) +b] = 1 - e_i
+\end{equation}
+As we saw from the previous assignment we have no cons
+\section{3. Regularization by relative entropy and the Gibbs distribution}
+Given the following minimization problem:
+\begin{align}
+\label{eq:ogprob}
+\min_{\rho_1,...,\rho_m} \hspace{0.5cm} &\alpha \sum\limits_{h=1}^m \rho_h L_h + \sum\limits_{h=1}^m \rho_h \text{ ln} \dfrac{\rho_h}{\pi_h} \\
+s.t. \hspace{0.5cm} &\sum\limits_{h=1}^m \rho_h = 1 \\
+&\forall h: \rho_h \geq 0
+\end{align}
+we wish to show that the solution has the following form
+\begin{equation}
+\label{eq:2showthis}
+\rho_h = \dfrac{\pi_h e^{-\alpha L_h}}{\sum_{h'=1}^m \pi_{h'}e^{-\alpha L_h'}}
+\end{equation}
+To show this, I will follow the given guidelines and drop the last constraint and prove it later. First we write up the Lagrange function, where the equality constraint is changed to be equal to zero:
+\begin{align}
+L(\rho, \lambda) &= \alpha \sum\limits_{h=1}^m \rho_h L_h + \sum\limits_{h=1}^m \rho_h \text{ ln} \dfrac{\rho_h}{\pi_h} + \lambda(\sum\limits_{h=1}^m \rho_h -1) \\
+&= \alpha \sum\limits_{h=1}^m \rho_h L_h + \sum\limits_{h=1}^m \rho_h 
+\text{ ln } \rho_h - \sum\limits_{h=1}^m \rho_h \text{ ln } \pi_h + \lambda(\sum\limits_{h=1}^m \rho_h -1)
+\label{eq:derivoff}
+\end{align}
+Now we take the derivative of \eqref{eq:derivoff} with respect to  each $\rho_h$ and set them to zero. For a single $\rho_h$ this is given by:
+\begin{equation}
+\nabla L_{\rho_h} (\rho_h, \lambda) = \alpha L_h + \text{ ln } \rho_h + 1 - \text{ ln } \pi_h + \lambda = 0
+\end{equation}
+From this we get:
+\begin{align}
+\text{ln } \rho_h &= \text{ln } \pi_h - \alpha L_h -1 - \lambda \Rightarrow \\
+\rho_h &= \pi_h e^{-\alpha L_h -1 - \lambda} = \pi_h e^{-\alpha L_h} e^{-1-\lambda}
+\label{eq:2}
+\end{align}
+$\pi$ is a (prior) distribution, therefore we have $\pi_h \in [0,1]$, looking at \eqref{eq:2} we can easily verify that $\rho_h \geq 0$ for all $h$, because $e^{-x}$ will be greater than 0 for all $x$ and the term can therefore never be negative. \\ Since we have given that the distribution $\rho$ must sum to 1, we can use \eqref{eq:2} to get the following:
+\begin{align}
+\sum\limits_{h=1}^m \rho_h = e^{-1-\lambda} \sum\limits_{h=1}^m \pi_h e^{-\alpha L_h} = 1
+\label{eq:3}
+\end{align}
+rewriting \eqref{eq:3}, we get:
+\begin{equation}
+e^{-1-\lambda} = \dfrac{1}{\sum_{h=1}^m \pi_h e^{-\alpha L_h}}
+\end{equation}
+plugging this value back into \eqref{eq:2} we have the following value of $\rho_h$
+\begin{align}
+\rho_h &= \pi_h e^{-\alpha L_h} \dfrac{1}{\sum_{h=1}^m \pi_h e^{-\alpha L_h}} \\
+&= \dfrac{\pi_h e^{-\alpha L_h}}{\sum_{h=1}^m \pi_h e^{-\alpha L_h}}
+\end{align}
+Which is equal to \eqref{eq:2showthis} and therefore what we wanted to prove.
+\section{4. Follow The Leader (FTL) algorithm for i.i.d. full information games}
+For the "Follow The Leader" approach, at each time $t$ we play the arm which was the most successful up to round $t$. That is, at each round we play the arm:
+\begin{equation}
+\label{eq:arm}
+A_t = \max_{a} \hat{\mu}_{t-1}(a)
+\end{equation}
+Because the game is played in the full information setting, we will know for each time $t$, which arm satisfies \eqref{eq:arm}. We wish to bound the pseudo regret of the "Follow the Leader" strategy. First we note that the number of times an action $a$ was played can be written as followed:
+\begin{align}
+N_{T(a)} = \sum_{t=1}^T 1\lbrace A_t = a \rbrace
+\end{align}
+where
+\begin{align}
+\mathbb{E}[1\lbrace A_t =a \rbrace ] &\leq P \lbrace \hat{\mu}_{t-1}(a) \geq \max_{a'} \hat{\mu}_{t-1}(a') \rbrace \\
+&\leq P \lbrace \hat{\mu}_{t-1}(a) \geq \hat{\mu}_{t-1}(a^*) \rbrace
+\label{eq:4}
+\end{align}
+From the lecture notes, we have that the pseudo regret $\bar{R}_T$ is defined as:
+\begin{equation}
+\bar{R}_T = \sum\limits_{a} \Delta(a) \mathbb{E}[N_T(a)]
+\label{eq:regret}
+\end{equation}
+Thus if we can bound \eqref{eq:4}, we can get a bound on the pseudo regret. To bound \eqref{eq:4} I will use the same approach as in the lecture notes, but for full information, instead of bandit setting:
+\begin{align}
+&P \lbrace \hat{\mu}_{t-1}(a) \geq \hat{\mu}_{t-1}(a^*) \rbrace \\
+&\leq P \lbrace \hat{\mu_{t-1}(a) \geq \mu(a) + \dfrac{1}{2} \Delta} \rbrace + 
+P \lbrace \hat{\mu}_{t-1}(a^*) \leq \mu^* - \dfrac{1}{2} \Delta \rbrace \\
+&\leq 2 e^{-2t-1(\frac{1}{2}\Delta)^2} = 2e^{-t-1 \Delta^2 / 2}
+\end{align}
+where the last inequality is from Hoeffdings inequality.
+Thus we have the bound:
+\begin{equation}
+P \lbrace \hat{\mu}_{t-1}(a) \geq \hat{\mu}_{t-1}(a^*) \rbrace \leq 2 e^{-\frac{\Delta^2}{2}(t-1)}
+\end{equation}
+Now we can define $\mathbb{E}[N_T(a)]$:
+\begin{align}
+\mathbb{E}[N_T(a)] &= \sum\limits_{t=1}^T \mathbb{E}[1\lbrace A_t=a \rbrace ] \\ &\leq \sum\limits_{t=1}^T P \lbrace \hat{\mu}_{t-1}(a) \geq \hat{\mu}_{t-1}(a^*) \rbrace \\
+&\leq \sum\limits_{t=1}^T 2e^{-\frac{\Delta^2}{2}(t-1)} \\
+&= 2 \sum\limits_{t=1}^T e^{-\frac{\Delta^2}{2}(t-1)} = 2 \sum\limits_{t=0}^T e^{-\frac{\Delta^2}{2}t}
+\label{eq:5}
+\end{align}
+when taking $t \rightarrow \infty$ over \eqref{eq:5}, we sum up a geometric series, which is defined as followed:
+\begin{equation}
+\sum\limits_{t=0}^\infty r^t = \dfrac{1}{1-r} 
+\end{equation}
+for $r<1$. In our case we have $r = e^{-\frac{\Delta^2}{2}}$ which is always less than 1, when $\Delta(a) > 0$. Thus we get the following:
+\begin{equation}
+\mathbb{E}[N_t(a)] \leq 2 \cdot \frac{1}{1-e^- \frac{\Delta^2}{2}}
+\end{equation}
+combining this with the definition on the pseudo regret from \eqref{eq:regret}, we get the following bound:
+\begin{equation}
+\bar{R}_T \leq \sum\limits_{a:\Delta(a) > 0} \hspace{0.2cm} \dfrac{2}{ 1 - e^{- \frac{\Delta(a)^2}{2}}} \Delta(a)
+\end{equation}
+which is the desired bound.
+\end{document}

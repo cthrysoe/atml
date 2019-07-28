@@ -1,0 +1,345 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{latexsym}
+\usepackage{subcaption}
+\usepackage{gensymb}
+\usepackage{caption}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum}
+\usepackage{tabularx}
+\usepackage{color}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{white},   % you must add \usepackage{color} or \usepackage{xcolor}
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  otherkeywords={*,...},           % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+\linespread{1.1} % Line spacing
+
+%\pagestyle{fancy}
+\lhead{Set Header} % Top left header
+\chead{}
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+\setlength\parindent{16pt} % Removes all indentation from paragraphs
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\title{
+\vspace{1in}
+\textmd{\textbf{Advancd Topics in Machine Learning - Assignment 2}} \\
+\author{Christoffer Thrysøe - dfv107}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+\pagenumbering{arabic}
+\section{1. Subgradients}
+\subsection{1}
+We wish to construct a function $f : \mathcal{R} \rightarrow \mathcal{R}$ with differential set $[-2,2]$ at $0$. \\Choosing the function
+\begin{equation}
+f(x) = 2 |x|
+\end{equation}
+we have that for $x<0$ the subgradient is $\partial f(x) = -2$ and for $x > 0$ we have $\partial f(x) = 2$ therefore at 0, the differential set for $f$ is $[-2,2]$. 
+\subsection{2}
+For the function to have the desired properties we must have:
+\begin{equation}
+f(z) \geq f(x) + g^T (z-x)
+\end{equation}
+where $g$ is the differential set, and $x=0$, thus we have the following:
+\begin{align}
+2|z| &\geq gz
+\end{align}
+%% \Rightarrow \\
+%\label{eq:gt}
+%2|z| &\geq 2z - 2z
+clearly the desired property is satisfied when $g \in [-2,2]$ because
+\begin{align}
+2|z| &\geq 2z \\
+2|z| &\geq -2z
+\end{align}
+\section{2. Convexity of logistic regression}
+\subsection{1}
+We wish to prove that the derivative of
+\begin{equation}
+f(x) = \text{ln}(1+e^x)
+\end{equation}
+is
+\begin{equation}
+\label{eq:logistic}
+f'(x) = \dfrac{1}{1+e^{-x}}
+\end{equation}
+For the proof we first note that the derivative of $\text{ln}(x)$ is $1/x$, then we apply the chain rule as followed:
+\begin{align}
+\dfrac{\partial}{\partial x} f(x) &= \dfrac{\partial}{\partial x} \left[ln(1+e^x)\right] \\
+&= \dfrac{1}{1 + e^x} \dfrac{\partial}{\partial x} \left[e^x\right] \\
+\label{eq:cont}
+&= \dfrac{e^x}{1+e^x}
+\end{align}
+To get \eqref{eq:logistic} I will instead start at \eqref{eq:logistic} and derive \eqref{eq:cont}.\\
+First we note that $e^{-x} = 1/e^x$ and we get the following:
+\begin{align*}
+\dfrac{1}{1+e^{-x}} &= \dfrac{1}{ \frac{1}{1} + \frac{1}{e^x}} \\
+&= \dfrac{1}{ \frac{e^x}{e^x} + \frac{1}{e^x}} \\
+&= \dfrac{1}{ \frac{1+ e^x}{e^x} } \\
+&= \dfrac{e^x}{1+e^x}
+\end{align*}
+and therefore we can conclude that:
+\begin{equation*}
+f'(x) = \dfrac{1}{1+e^{-x}}
+\end{equation*}
+To prove that the function $f'(x)$ is a monotonically increasing function, we must prove that $f''(x)$ is positive. First we take the derivative of \eqref{eq:logistic}:
+\begin{align*}
+\dfrac{\partial}{\partial x} f'(x) &= \dfrac{\partial}{\partial x} \left[ \dfrac{1}{1+e^{-x}} \right]
+\end{align*}
+Again we apply the chain rule where we have:
+\begin{equation*}
+\dfrac{\partial y}{\partial x} = \dfrac{\partial y}{\partial u} \dfrac{\partial u}{\partial x}
+\end{equation*}
+in which we define $u = 1+e^{-x}$, $y = u^{-1}$, thus we have:
+\begin{align*}
+\dfrac{\partial y}{\partial u} &= - \dfrac{1}{u^2} \\
+\dfrac{\partial u}{\partial x} &= -e^{-x}
+\end{align*}
+and combined
+\begin{align*}
+\dfrac{\partial y}{\partial x} &= - \dfrac{1}{ (1+e^{-x})^2} -e^{-x} \\
+&= - \dfrac{-e^{-x}}{(1+e^{-x})^2} \\
+&= \dfrac{e^{-x}}{(1+e^{-x})^2}
+\end{align*}
+and therefore:
+\begin{equation}
+\label{eq:dxdx}
+f''(x) = \dfrac{e^{-x}}{(1+e^{-x})^2}
+\end{equation}
+To see why \eqref{eq:dxdx} is positive, we note that $e^{-x}$ converges to zero but is positive for all $x > 0$, therefore we have that $f'(x)>0$ and is thus a monotonically increasing function.
+\section{3. PAC-Bayes vs. Occam}
+\subsection{1}
+We wish to prove that the following bound holds, with probability greater than $1-\delta$:
+\begin{equation}
+\text{kl}\left( \mathbb{E}_\rho \left[\hat{L}(h,S)\right] \parallel \mathbb{E}_\rho \left[L(h)\right] \right) \leq \dfrac{\sum\limits_{h \in \mathcal{H}} \rho(h) \text{ln} \dfrac{1}{\pi(h)} + \text{ln} \frac{n+1}{\delta}}{n}
+\end{equation}
+First we note that:
+\begin{equation}
+\label{eq:defkl}
+\text{KL}(\rho || \pi) = \mathbb{E}_\rho \left[\text{ln} \dfrac{1}{\pi}\right] - H(\rho)
+\end{equation}
+where the entropy $H(p)$ is defined as $H(p)= - \sum\limits_{x \in \mathcal{X}} p(x) \text{ ln } p(x)$ thus $H(p)$ is negative. From theorem 3.13 from Yevgeny's lecture notes, we have the following:
+\begin{equation}
+\label{eq:theorem313}
+P \left\lbrace \text{kl}\left( \mathbb{E}_\rho \left[\hat{L}(h,S)\right] \parallel \mathbb{E}_\rho \left[L(h)\right] \right) \geq \dfrac{\text{KL}(\rho || \pi) + \text{ln} \frac{n+1}{\delta}}{n}
+\right\rbrace \leq \delta
+\end{equation}
+if we input the definition of $KL$ from \eqref{eq:defkl} in \eqref{eq:theorem313}, we get the following
+\begin{equation}
+\label{eq:theorem314}
+P \left\lbrace \text{kl}\left( \mathbb{E}_\rho \left[\hat{L}(h,S)\right] \parallel \mathbb{E}_\rho \left[L(h)\right] \right) \geq \dfrac{\sum\limits_{h \in \mathcal{H}} \rho(h) \text{ln} \dfrac{1}{\pi(h)} - H(\rho(h)) + \text{ln} \frac{n+1}{\delta}}{n}
+\right\rbrace \leq \delta
+\end{equation}
+Because $-H(\rho)$ is positive, we can remove it from \eqref{eq:theorem314} and the bound will still hold. Thus we can write for all distributions of $\rho$ over $\mathcal{H}$ we have the following bound:
+\begin{equation}
+P \left\lbrace \text{kl}\left( \mathbb{E}_\rho \left[\hat{L}(h,S)\right] \parallel \mathbb{E}_\rho \left[L(h)\right] \right)  \leq \dfrac{\sum\limits_{h \in \mathcal{H}} \rho(h) \text{ln} \dfrac{1}{\pi(h)} + \text{ln} \frac{n+1}{\delta}}{n}
+\right\rbrace \geq  1- \delta
+\end{equation}
+which is what we wanted to prove.
+\subsection{2}
+We wish to prove that the PAC-bayes-kl inequality, which holds with probability greater than $1-\delta$:
+\begin{equation}
+\label{eq:thistight}
+\text{kl}\left( \mathbb{E}_\rho \left[\hat{L}(h,S)\right] \parallel \mathbb{E}_\rho \left[L(h)\right] \right) \leq \dfrac{\text{KL}(\rho || \pi) + \text{ln} \frac{n+1}{\delta}}{n}
+\end{equation}
+is atleast as tight as the Occam's razor bound with kl, which holds with probability greater than $1- \delta$:
+\begin{equation}
+\text{kl}\left( \mathbb{E}_\rho \left[\hat{L}(h,S)\right] \parallel \mathbb{E}_\rho \left[L(h)\right] \right)  \leq \dfrac{\sum\limits_{h \in \mathcal{H}} \rho(h) \text{ln} \dfrac{1}{\pi(h)} + \text{ln} \frac{n+1}{\delta}}{n}
+\end{equation}
+Thus we wish to show that:
+\begin{equation}
+\dfrac{\sum\limits_{h \in \mathcal{H}} \rho(h) \text{ln} \dfrac{1}{\pi(h)} + \text{ln} \frac{n+1}{\delta}}{n} \leq \dfrac{\text{KL}(\rho || \pi) + \text{ln} \frac{n+1}{\delta}}{n} 
+\end{equation}
+If we again put in the definition of $KL$, we get the following:
+\begin{align}
+\dfrac{\text{KL}(\rho || \pi) + \text{ln} \frac{n+1}{\delta}}{n} &= \dfrac{\sum\limits_{h \in \mathcal{H}} \rho(h) \text{ln} \dfrac{1}{\pi(h)} - H(\rho(h)) + \text{ln} \frac{n+1}{\delta}}{n} \\
+&\geq \dfrac{\sum\limits_{h \in \mathcal{H}} \rho(h) \text{ln} \dfrac{1}{\pi(h)} + \text{ln} \frac{n+1}{\delta}}{n}
+\end{align}
+where the last inequality follows from $-H(\rho)$ being positive, thus proving that the PAC-bayes inequality is atleast as tight as the Occam's razor bound with kl.
+\section{4. Nonnegativity of KL}
+\subsection{1}
+We wish to show that for all $0 < x < \infty$:
+\begin{equation}
+\label{eq:targ}
+\text{ln}(x) \leq x -1
+\end{equation}
+To show this, we construct a function of the left hand side minus the right hand side of the inequality:
+\begin{equation}
+\label{eq:func}
+f(x) = \text{ln}(x) - x + 1
+\end{equation}
+If we can prove that $f(x) \leq 0$ for all $x>0$ we will have proven \eqref{eq:targ}. The strategy of doing so is to locate the functions local maximum and prove that this is a global maximum, and is less than or equal to 0. First we take the derivative of \eqref{eq:func}:
+\begin{align}
+\dfrac{\partial}{\partial x} f(x) &= \dfrac{\partial}{\partial x} \left[ \text{ln}(x) - x + 1 \right] \\
+\label{eq:deriv}
+&= \dfrac{1}{x} - 1
+\end{align}
+Finding the optimum:
+\begin{align}
+f'(x) = \dfrac{1}{x} - 1 = 0 \Leftrightarrow x = 1
+\end{align}
+The function value of the optimum is $f(1) = \text{ln}(1) - 1 + 1 = 0$. To see if the optimum is a local maximum we take the second derivative of $f$:
+\begin{align}
+\dfrac{\partial^2}{\partial x^2} f(x) &= \dfrac{\partial^2}{\partial x^2} \left[ \text{ln}(x) -x + 1 \right] \\
+&= -\dfrac{1}{x^2}
+\end{align} since we have that $f''(1) = - \dfrac{1}{1^2} = -1$, $f(1)$ is a local maximum and that the function increases from $0$ to $1$ until a stationary point is met at $x=1$ and then the function decreases afterwards, thus being concave in $x=1$. We now need to determine that $f'(x) < 0$ for all $x>1$. This can easily be verified by looking at $f'(x)$ shown in \eqref{eq:deriv}. As x increases $1/x$ will decrease and therefore we have that $f(x) < 0 \text{ } \forall
+ x > 1$. Which means that $f(0)$ is global maximum and we have that:
+$$
+\forall x > 0 < \infty : f(x) \leq f(1)
+$$
+which verifies that:
+$$
+ln(x) \leq x-1
+$$
+\subsection{2}
+We wish to prove that
+\begin{equation}
+KL(p||q) \geq 0
+\end{equation}
+First we note that the definition of $KL(p||q)$ is given by:
+\begin{equation}
+KL(p||q) = \sum\limits_{x \in X} p(x) \text{ ln } \dfrac{p(x)}{q(x)}
+\end{equation}
+(we assume that $p$ and $q$ are discrete distributions as the assignment text allows). For the proof we wish to show that $-KL(p||q) \leq 0$:
+\begin{align}
+- KL(p||q) &= - \sum\limits_{x \in X} p(x) \text{ ln } \dfrac{p(x)}{q(x)}\\
+\label{eq:geq1}
+&= \sum\limits_{x \in X} p(x) \text{ ln } \dfrac{q(x)}{p(x)}\\
+\label{eq:geq2}
+&\leq \sum\limits_{x \in X} p(x) \left( \dfrac{q(x)}{p(x)} -1 \right) \\
+\label{eq:geq3}
+&= \sum\limits_{x \in X} p(x) \left( \dfrac{q(x) - p(x)}{p(x)}\right) \\
+\label{eq:geq4}
+&= \sum\limits_{x \in X} p(x)- q(x) \\
+\label{eq:geq5}
+&= 0
+\end{align}
+where \eqref{eq:geq1} follows from: $- a \text{ ln } (b/c) = a \text{ ln } (c/b)$, \eqref{eq:geq2} follows from the previous proof that $\text{ ln }(x) \leq x-1$, \eqref{eq:geq3} follows from $(a/b)-1 = (a-b)/b$ and \eqref{eq:geq5} follows from $\sum\limits_{x \in X} p(x) = 1$ and $\sum\limits_{x \in X} q(x) = 1$
+\\
+which verifies that $KL(p||q) \geq 0$ \\
+If we have that $p(x)=0$ for any $x$, the term on line \eqref{eq:geq1}, is 0 because $ln\frac{0}{q} = 0$, thus we end up with $kl(p||q)=0$. If we on the other hand have that for some $x$: $q(x)=0$, then $p(x) \text{ln} \frac{p}{0} = \infty \geq 0$,  thus we have proved that $KL(p||q) \geq 0$
+\subsection{3}
+If we have that $p(x) = q(x)$, the condition $\text{ln }(x) \leq x-1$ does not hold, as we have the following on line \eqref{eq:geq2} in the proof:
+\begin{align}
+\text{ ln } (x) &\leq x-1 \Rightarrow \\
+\text{ ln }\dfrac{q(x)}{p(x)} &\leq  \dfrac{q(x)}{p(x)} - 1
+\end{align}
+however because we have that $p(x) = q(x)$ we have the following:
+\begin{align}
+\text{ ln }\dfrac{q(x)}{p(x)} &=  \dfrac{q(x)}{p(x)} - 1 \Rightarrow \\
+\text{ ln } (1) &= \dfrac{1}{1} - 1 \Rightarrow \\
+0 &= 0
+\end{align}
+Thus we end up with an equality instead of an inequality and get $KL(p||q) = 0$ when $p(x) = q(x)$.
+\section{5. Early stopping and overfitting}
+\subsection{1}
+% Validation set is slightly contaminated, i.e it contains a small amount of bias because it introduced bias on a small number of decsisions
+% The estimate of L(h) is now biased
+% 
+%TODO using the validation set for training
+% 
+For this question, I will first discuss the usage of the validation set for early stopping. For $\hat{L}(h_{t^*},S^{val})$ to be an unbiased estimate of $L(h_{t^*})$ we must have that $\mathbb{E}[\hat{L}(h_{t^*},S^{val})] = L(h_{t^*})$. Since we have not used the validation set $S^{val}$ for training, we can use the validation set to form an unbiased estimate of the expected error $L(h_{t^*})$. When we, however choose our final hypothesis, based on the validation set $S^{val}$, we introduce a small bias, because we are somewhat basing the training process (model selection) on the validation set. The error on the validation set will fluctuate, unlike the training error. The error can have an "optimistic" variance i.e. the error is low or a "pessimistic" variance in which the error is high. These sudden fluctuations may be coincidental and not reflect the test error. If we take the lowest error on the validation set to represent the error on the test set, we are being optimistic also about the test set, and thus we introduce an optimistic bias in the validation error. To show this bias, we consider the following example:\\
+Given two hypothesis $h_1$, $h_2$ with $L(h_1) = L(h_2) = 0.5$, where the actual error $l_1, l_2$ are uniformly selected in the interval $[0,1]$. Each error is an unbiased estimate of the expected loss. If we choose the smallest error of $l_1, l_2$ (similar as choosing the smallest validation error), i.e. we take: $l= \text{min}(l_1,l_2)$. Now, however we have that the expected value is less than $0.5$ with probability of $75\%$. This is because we are picking the smallest error, and we only need one to be lower than 0.5, which it is with probability of $75\%$. Due to the selection of models the errors are no longer unbiased estimates of their expected loss, due to the optimistic bias. This example shows that choosing the model based on the validation error introduces a small bias.
+\subsubsection{a}
+For this approach, we stop the training after 100 iterations and return $h_t^* = h_{100}$. Because we are not stopping based on the validation error, but simply on a given number epochs, the error $\hat{L}(h_{t^*},S^{val})$ is an unbiased estimate of $L(h_{t^*})$, because $S^{val}$ did not have any influence on the model selection.
+\subsubsection{b}
+For this approach, we stop the training once we observe a training iteration where $\hat{L}(h_{i},S^{val}) > \hat{L}(h_{i-1},S^{val})$, then $t^* = i -1$. The model selection is influenced by the validation set. Therefore $\hat{L}(h_{t^*},S^{val})$ is not an unbiased estimate of $L(h_{t^*})$.
+\subsubsection{c}
+For this approach, once we observe an increase in the validation error, we keep training for a fixed number of training epochs before stopping. The selected model $h_{t^*}$ will be the model yielding the lowest validation error over all training epochs. Again the model selection is influenced by the validation set, and introduces more optimistic bias than the previous early stopping method, because it looks for the smallest validation error over even more training cycles. Therefore $\hat{L}(h_{t^*},S^{val})$ is not an unbiased estimate of $L(h_{t^*})$.
+\subsection{2}
+For approach $a$, we only consider a single hypothesis, i.e. when $t=100$, thus we can use Hoeffding's to get a bound on $L(h)$, which holds with probability greater than $1-\delta$:
+\begin{equation}
+L(h_{t^*}) \leq \hat{L}(h_{t^*},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{\delta}}{2n}}
+\end{equation}
+where $t^* = 100$. \\
+For $b$ and $c$ we note that choosing the hypothesis $h_{t^*}$, we have evaluated $t^*$ number of hypothesis. As more models are being considered, the probability of encountering validation errors which got "lucky" and will not represent the expected error increases. Thus, the more hypothesis we consider, the looser the bound should be. We have a finite number of hypothesis at $t^*$, and we wish to have an increasing bound when the number of hypothesis increases.  Therefore we can use Occam's Razor bound and define the distribution over the hypothesis set $p(h_i)$ to increase the complexity term based on the number of hypothesis. We can use the following function of $p(h_i)$ to get such a behaviour:
+\begin{equation}
+p(h_i) = \dfrac{1}{2^i}
+\end{equation}
+Thus we can derive the following bound on
+on $L(h_{t^*})$, which holds with probability greater than $1 - \delta$:
+\begin{equation}
+\label{eq:bound}
+L(h_{t^*}) \leq \hat{L}(h_{t^*},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{p(h_t^*) \delta}}{2n}}
+\end{equation}
+where $t^*$ is the number of hypothesis considered at training epoch $t^*$, as each training epoch gives us a new model. The bound will hold for early stopping method $b$ and $c$.
+%(1) selecting from single hypothesis
+% (2,3) selecting from finite number of hypothesis
+\subsection{3}
+\subsubsection{b}
+As the bound from question 2 indicates, the larger the number of considered hypothesis gets, the less trust we have in the generalization. Thus we could add an increasing penalty on the validation error as $t$ increases. We could add the term of the bound in \eqref{eq:bound}, that is for training epoch $t^i$, we redifine the validation error:
+\begin{equation}
+\hat{L}(h_{t^i},S^{val}) = \hat{L}(h_{t^i},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{p(h_i) \delta}}{2n}}
+\end{equation}
+and again stop, whenever we observe an increase in the validation error, thus when:
+\begin{equation}
+\label{eq:penalty}
+\hat{L}(h_{t^i},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{p(h_i) \delta}}{2n}} < \hat{L}(h_{t^{i+1}},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{p(h_{i+1}) \delta}}{2n}}
+\end{equation}
+However as discussed, the validation error is a fluctuating function, therefore the first decrease in  $\hat{L}(h_{t^i},S^{val})$ is likely to be a random fluctuation, instead of indicating a good stopping point, thus I would use a similar approach to $c$.
+\subsubsection{c}
+We can use the same approach of penalizing the validation error as the number of hypothesis grow by adding the last term of the bound in \eqref{eq:bound}. The early stopping approach would remain the same, thus we are still going $x$ epochs after finding an increase in the validation error, but with the added penalty for considering more hypothesis. Thus after encountering an increase in the validation error + bound (as shown in \eqref{eq:penalty}) , we check the following:
+\begin{equation}
+\label{eq:penalty2}
+\hat{L}(h_{t^{opt}},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{p(h_{opt}) \delta}}{2n}} < \hat{L}(h_{t^{i}},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{p(h_i) \delta}}{2n}}
+\end{equation}
+where ${opt}$ is the training epoch index, which resulted in the lowest achieved validation error + bound, before we encountered an increase in the validation error. If \eqref{eq:penalty2} does not hold, we have found a better validation error, and will use this as the new index for the minimal error . After $x$ iterations have passed the model yielding the lowest validation error + bound is returned.
+\subsection{4}
+We wish to use the bound to define, when we can definitely stop, after observing an increase in the validation error, that is when the bound in \eqref{eq:penalty2} will definitely stop improving. To know for certain that we can stop, at no risk of missing a better hypothesis, we could define the stopping criteria as followed:
+\begin{equation}
+\label{eq:cstop}
+\hat{L}(h_{t^{opt}},S^{val}) + \sqrt{\dfrac{\text{ln } \frac{1}{p(h_{opt}) \delta}}{2n}} \leq \sqrt{\dfrac{\text{ln } \frac{1}{p(h_{i}) \delta}}{2n}}
+\end{equation}
+where $h_{opt}$ is the current optimal hypothesis, and $i$ is the current training epoch. Because the complexity term is increasing with $i$, if we have the inequality of \eqref{eq:cstop} satisfied, we will not be able to encounter a validation error, which results in a more optimal value with the bound added, because the complexity term is too high.
+\end{document}
